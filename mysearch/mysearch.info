@@ -1,0 +1,4 @@
+name = My Search
+description = "Blink Reaction test search module."
+core = 7.x
+
