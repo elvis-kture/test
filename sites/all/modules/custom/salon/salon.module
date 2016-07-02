@@ -1,0 +1,127 @@
+<?php
+
+define('RED_STATUS_TID', 25);
+define('DAY_IN_SECONDS', 3600*24);
+define('BILL_NODE_TYPE', 'event_calendar');
+define('CLOSE_DAY_NODE_TYPE', 'close_day');
+define('GREEN_STATUS_EVENT_TID', 11);
+
+function salon_init(){
+	if (drupal_is_front_page()) {
+		drupal_goto('masters/today/billing');
+	}
+
+	drupal_add_css(drupal_get_path('module', 'salon') .'/salon.css');
+	drupal_add_js(drupal_get_path('module', 'salon') .'/salon.js');
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function salon_form_alter(&$form, &$form_state, $form_id) {
+	if ($form_id == 'event_calendar_node_form') {
+		if (!$form['title']['#default_value']) {
+			$form['title']['#default_value'] = 'Default event title - ' . time();
+		}
+
+		$form['title']['#type'] = 'hidden';
+
+		if (!user_access('administer site configuration')) {
+			$form['event_calendar_status']['#access'] = FALSE;
+		}
+	}
+	if ($form_id == 'close_day_node_form') {
+		if (!$form['title']['#default_value']) {
+			$form['title']['#default_value'] = t('Закрытый день - ' . $_GET['date'] . ' ' . time());
+		}
+
+		$form['title']['#type'] = 'hidden';
+		if ($_GET['date']) {
+			$form['field_date'][LANGUAGE_NONE][0]['#default_value']['value'] = $_GET['date'] . ' 00:00:00';
+			$form['field_date'][LANGUAGE_NONE][0]['#default_value']['value2'] = $_GET['date'] . ' 00:00:00';
+			$form['field_date'][LANGUAGE_NONE][0]['#date_items']['value'] = $_GET['date'] . ' 00:00:00';
+			$form['field_date'][LANGUAGE_NONE][0]['#date_items']['value2'] = $_GET['date'] . ' 00:00:00';
+		}
+		$form['field_date']['#access'] = FALSE;
+		$form['body']['#type'] = 'hidden';
+
+		if ((int)$_GET['salon']) {
+			$form['field_salon'][LANGUAGE_NONE]['#default_value'] = $_GET['salon'];
+			$form['field_salon']['#access'] = FALSE;
+		}
+
+		$form['actions']['submit']['#value'] = '<span class="icon glyphicon glyphicon-ok" aria-hidden="true"></span>' . t('Закрыть день');
+		$form['actions']['submit']['#attributes'] = array('class' => array('btn btn-success form-submit'));
+		$form['actions']['contact_information'] = array(
+			'#weight' => 11,
+			'#attributes' => array('class' => array('btn btn-danger form-submit')),
+			'#markup' => '<button id="cancel-popup" type="button" value="Отмена" class="btn btn-danger form-submit"><span class="icon glyphicon" aria-hidden="true"></span>' . t('Отмена') . '</button>',
+		);
+		$form['actions']['submit']['#submit'][] = '_salon_close_day_node_form_submit';
+	}
+}
+
+function _salon_close_day_node_form_submit($form, &$form_state){
+	$salon_tid = $form_state['node']->field_salon[LANGUAGE_NONE][0]['tid'];
+	$date_array = explode('-', $form_state['node']->field_date[LANGUAGE_NONE][0]['value']);
+	$date_string = '/' . $date_array[0] . '-' . $date_array[1];
+
+	$form_state['redirect'] = array('bills/month' . $date_string, array('query' => array('field_salon_tid' => $salon_tid)));
+}
+
+function salon_node_presave($node){
+	global $user;
+
+	if ($node->type == variable_get('bill_node_type', BILL_NODE_TYPE)) {
+		$datetime_array = explode(' ', $node->field_date[LANGUAGE_NONE][0]['value']);
+		$salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
+		$closed_days = views_get_view_result('all_closed_days', 'block_3', $salon_tid, $datetime_array[0]);
+
+		if ($closed_days) {
+			if (!user_access('administer site configuration', $user)) {
+				$node->event_calendar_status[LANGUAGE_NONE][0]['tid'] = RED_STATUS_TID;
+			}
+
+			//delete all CLOSED_DAY nodes
+//			$nodes = array();
+//			foreach ($closed_days as $day_node) {
+//				$nodes[$day_node->nid] = $day_node->nid;
+//			}
+//			node_delete_multiple($nodes);
+		}
+	}
+	if ($node->type == variable_get('close_day_node_type', CLOSE_DAY_NODE_TYPE)) {
+		$salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
+		$date = date('Y-m-d', strtotime($node->field_date[LANGUAGE_NONE][0]['value']));
+		$hacked_days = views_get_view_result('all_closed_days', 'block_2', $salon_tid, $date);
+		if ($hacked_days) {
+			$nids = array();
+			foreach ($hacked_days as $h_day) {
+				$nids[] = $h_day->nid;
+			}
+			if ($nids) {
+				// Get all nodes of 'page' type, populate the field with a value of '1'.
+				$pages = db_query("SELECT nid, vid FROM {node} WHERE nid IN (:nids)", array(':nids' => $nids))->fetchAllAssoc('nid');
+				foreach ($pages as $nid => $values) {
+					$fields = array(
+						'entity_type' => 'node',
+						'bundle' => BILL_NODE_TYPE,
+						'event_calendar_status_tid' => GREEN_STATUS_EVENT_TID,
+					);
+					undate_bill_node_status($values->nid, $fields);
+				}
+			}
+		}
+	}
+}
+
+function undate_bill_node_status($nid, $fields){
+	db_update('field_data_event_calendar_status')
+		->fields($fields)
+		->condition('entity_id', $nid)
+		->execute();
+	db_update('field_revision_event_calendar_status')
+		->fields($fields)
+		->condition('entity_id', $nid)
+		->execute();
+}

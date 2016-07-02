@@ -1,0 +1,126 @@
+
+.view-test .view-header button{
+    padding: 0;
+}
+.view-test .view-header button a{
+    color: #ffffff;
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    height: 100%;
+}
+.view-test .view-header button a:hover{
+    text-decoration: none;
+}
+.page-masters aside{
+    display: none;
+}
+.views-table{
+    width: 100%;
+}
+.views-table th,
+.views-table td{
+    padding: 10px;
+}
+.views-table td.views-field-event-calendar-status{
+    padding: 0;
+}
+.views-table .odd{
+    background: lightgray;
+}
+.views-table tfoot{
+    border-top: 1px solid #000000;
+}
+.views-table .views-field.views-field-field-date-1{
+    float: right;
+}
+.page-bills-month .col-sm-9,
+.page-node-edit .col-sm-9,
+.page-node-add .col-sm-9,
+.page-masters .col-sm-9{
+    width: 100% !important;
+}
+.page-masters .ui-datepicker-calendar{
+    display: none;
+}
+.status-25 {
+    background: red;
+    color: #ffffff;
+    padding: 6px 12px;
+}
+.menu.nav.navbar-nav li.first.leaf{
+    background: red;
+}
+.menu.nav.navbar-nav li.first.leaf a{
+    color: #ffffff;
+}
+.menu.nav.navbar-nav.secondary li.first.leaf a{
+    color: #777;
+}
+.menu.nav.navbar-nav.secondary li.first.leaf{
+    background: transparent;
+}
+
+.page-bills-month aside,
+.page-node-edit aside,
+.page-node-add aside{
+    display: none;
+}
+
+.page-bills-month .autocomplete-deluxe-form,
+.page-node-edit .autocomplete-deluxe-form,
+.page-node-add .autocomplete-deluxe-form{
+    float: left;
+}
+.node-event_calendar-form fieldset,
+.node-event_calendar-form .field-widget-number,
+.node-event_calendar-form .field-type-taxonomy-term-reference{
+    width: 17%;
+    float: left;
+    margin-right: 10px;
+}
+.node-event_calendar-form fieldset.date-combo .container-inline-date .date-padding{
+    padding: 0;
+}
+.node-event_calendar-form fieldset.date-combo .control-label{
+    display: none;
+}
+.node-event_calendar-form fieldset .field-widget-number,
+.node-event_calendar-form fieldset .field-type-taxonomy-term-reference{
+    width: 100%;
+}
+.node-event_calendar-form .field-name-body{
+    clear: both;
+}
+.vertical-tabs-panes,
+.tabbable.tabs-left.vertical-tabs{
+    display: none;
+}
+td.day-closed {
+    background-color: #048e22 !important;
+    color: #ffffff;
+}
+td.day-hacked {
+    background-color: #ff1103 !important;
+    color: #ffffff;
+}
+.view .date-nav-wrapper .date-prev{
+    right: 75px;
+}
+.view .date-nav-wrapper .date-nav,
+.view-header .pager{
+    margin: 0;
+}
+.view-calendar{
+    position: relative;
+}
+.page-bills .view-filters{
+    position: absolute;
+    top: -30px;
+}
+#edit-preview{
+    display: none !important;
+}
+.breadcrumb {
+    display: none;
+}
