@@ -91,9 +91,11 @@ function salon_node_presave($node){
 		}
 	}
 	if ($node->type == variable_get('close_day_node_type', CLOSE_DAY_NODE_TYPE)) {
+
 		$salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
 		$date = date('Y-m-d', strtotime($node->field_date[LANGUAGE_NONE][0]['value']));
-		$hacked_days = views_get_view_result('all_closed_days', 'block_2', $salon_tid, $date);
+		$hacked_days = views_get_view_result('all_closed_days', 'block_4', $salon_tid, $date);
+
 		if ($hacked_days) {
 			$nids = array();
 			foreach ($hacked_days as $h_day) {
@@ -116,12 +118,13 @@ function salon_node_presave($node){
 }
 
 function undate_bill_node_status($nid, $fields){
-	db_update('field_data_event_calendar_status')
-		->fields($fields)
-		->condition('entity_id', $nid)
-		->execute();
-	db_update('field_revision_event_calendar_status')
-		->fields($fields)
-		->condition('entity_id', $nid)
-		->execute();
+
+//	db_update('field_data_event_calendar_status')
+//		->fields($fields)
+//		->condition('entity_id', $nid)
+//		->execute();
+//	db_update('field_revision_event_calendar_status')
+//		->fields($fields)
+//		->condition('entity_id', $nid)
+//		->execute();
 }
