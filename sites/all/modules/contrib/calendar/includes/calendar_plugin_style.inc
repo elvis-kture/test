@@ -377,7 +377,7 @@ class calendar_plugin_style extends views_plugin_style {
   function calendar_build_month() {
 	  ////////// PREPROCESS CLOSED DAYS
 
-		$salon_tid = isset($_GET['field_salon_tid']) && (int)$_GET['field_salon_tid'] ? (int)$_GET['field_salon_tid'] : NULL;
+		$salon_tid = isset($_GET['field_salon_tid']) && (int)$_GET['field_salon_tid'] ? (int)$_GET['field_salon_tid'] : 2;
 	  $closed_days = views_get_view_result('all_closed_days','block', $salon_tid);
 	  $hacked_days = views_get_view_result('all_closed_days','block_1', $salon_tid);
 	  $on_apprive_days = views_get_view_result('all_closed_days','block_5', $salon_tid);

@@ -5,6 +5,8 @@ define('DAY_IN_SECONDS', 3600*24);
 define('BILL_NODE_TYPE', 'event_calendar');
 define('CLOSE_DAY_NODE_TYPE', 'close_day');
 define('GREEN_STATUS_EVENT_TID', 11);
+define('NORMAL_STATUS_EVENT_TID', 12);
+define('ON_APPROVE_STATUS_EVENT_TID', 35);
 
 function salon_init(){
 	if (drupal_is_front_page()) {
@@ -21,7 +23,10 @@ function salon_init(){
 function salon_form_alter(&$form, &$form_state, $form_id) {
 	if ($form_id == 'event_calendar_node_form') {
 		if (!$form['title']['#default_value']) {
-			$form['title']['#default_value'] = 'Default event title - ' . time();
+			$form['title']['#default_value'] = time();
+		}
+		if ($form['#node']->field_date[LANGUAGE_NONE][0]['value']) {
+			$form['title']['#default_value'] = ' ' . t('за !date', array('!date' => $form['#node']->field_date[LANGUAGE_NONE][0]['value']));
 		}
 		$form['title']['#type'] = 'hidden';
 
@@ -29,9 +34,23 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 			$form['event_calendar_status']['#access'] = FALSE;
 		}
 		$form['field_salon'][LANGUAGE_NONE]['#options']['_none'] = ' - ' . t('Выбрать адрес') . ' - ';
-//		if (!user_access('administer site configuration')) {
-//			$form['event_calendar_status']['#access'] = FALSE;
-//		}
+		if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
+			if (!user_access('administer site configuration')) {
+				$datetime_array = explode(' ', $form['#node']->field_date[LANGUAGE_NONE][0]['value']);
+				$salon_tid = $form['#node']->field_salon[LANGUAGE_NONE][0]['tid'];
+				$closed_days = views_get_view_result('all_closed_days', 'block_3', $salon_tid, $datetime_array[0]);
+				if ($closed_days) {
+					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][NORMAL_STATUS_EVENT_TID]);
+					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][GREEN_STATUS_EVENT_TID]);
+					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][ON_APPROVE_STATUS_EVENT_TID]);
+					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][34]);
+				}
+				else {
+					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][GREEN_STATUS_EVENT_TID]);
+				}
+			}
+		}
+
 	}
 
 	if ($form_id == 'close_day_node_form') {
@@ -46,6 +65,10 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 			$form['field_date'][LANGUAGE_NONE][0]['#date_items']['value'] = $_GET['date'] . ' 00:00:00';
 			$form['field_date'][LANGUAGE_NONE][0]['#date_items']['value2'] = $_GET['date'] . ' 00:00:00';
 		}
+
+		if ($form['field_date'][LANGUAGE_NONE][0]['#default_value']['value']) {
+		}
+
 		$form['field_date']['#access'] = FALSE;
 		$form['body']['#type'] = 'hidden';
 

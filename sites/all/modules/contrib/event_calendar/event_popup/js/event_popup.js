@@ -94,10 +94,14 @@
       if(op) {
         $('table.full tr td, table.mini tr td', context).click(function () {
 
-            if ($(this).hasClass('day-on-approve')) {
+            if ($(this).hasClass('day-on-approve') || $(this).hasClass('day-hacked')) {
                 var answer = confirm(Drupal.t('Нельзя закрыть день. Есть неутвержденные расходы. Перейти на страницу расходов ?'))
                 if (answer) {
-                    window.location.href = '/masters/today/billing';
+                    var clicked_date = $(this).attr('data-date');
+                    window.location.href = '/masters/today/billing?' +
+                        'date_filter[min][date]=' + clicked_date +
+                        '&date_filter[max][date]=' + clicked_date
+                    ;
                 }
                 return false;
             }
