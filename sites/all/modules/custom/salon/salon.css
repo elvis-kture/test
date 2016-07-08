@@ -41,7 +41,7 @@
     width: 100% !important;
 }
 .page-masters .ui-datepicker-calendar{
-    display: none;
+    /*display: none;*/
 }
 .status-25 {
     background: red;
@@ -137,4 +137,8 @@ td.day-on-approve {
 }
 .breadcrumb {
     display: none;
+}
+.form-type-date-popup label{
+    float: left;
+    width: 25px;
 }
