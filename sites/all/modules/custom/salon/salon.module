@@ -40,13 +40,11 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 				$salon_tid = $form['#node']->field_salon[LANGUAGE_NONE][0]['tid'];
 				$closed_days = views_get_view_result('all_closed_days', 'block_3', $salon_tid, $datetime_array[0]);
 				if ($closed_days) {
-					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][NORMAL_STATUS_EVENT_TID]);
-					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][GREEN_STATUS_EVENT_TID]);
-					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][ON_APPROVE_STATUS_EVENT_TID]);
-					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][34]);
+					$form['event_calendar_status']['#access'] = FALSE;
 				}
 				else {
 					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][GREEN_STATUS_EVENT_TID]);
+					unset($form['event_calendar_status'][LANGUAGE_NONE]['#options'][RED_STATUS_TID]);
 				}
 			}
 		}

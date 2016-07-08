@@ -93,6 +93,7 @@
 	    var op = Drupal.settings.event_popup.op;
       if(op) {
         $('table.full tr td, table.mini tr td', context).click(function () {
+            var $tid = parseInt($('#edit-field-salon-tid').val());
 
             if ($(this).hasClass('day-on-approve') || $(this).hasClass('day-hacked')) {
                 var answer = confirm(Drupal.t('Нельзя закрыть день. Есть неутвержденные расходы. Перейти на страницу расходов ?'))
@@ -100,7 +101,8 @@
                     var clicked_date = $(this).attr('data-date');
                     window.location.href = '/masters/today/billing?' +
                         'date_filter[min][date]=' + clicked_date +
-                        '&date_filter[max][date]=' + clicked_date
+                        '&date_filter[max][date]=' + clicked_date +
+                        '&field_salon_tid=' + $tid
                     ;
                 }
                 return false;
@@ -117,7 +119,6 @@
 //        var selector = Drupal.settings.event_popup.selector;
         //var options =  Drupal.event_popup.explodeOptions(settings.event_popup.defaults);
         var options =  Drupal.event_popup.explodeOptions('width:auto;height:auto;position:[300,140]');
-        var $tid = parseInt($('#edit-field-salon-tid').val());
         if (url && title && selector) {
 			    var event_date = $(this).attr('data-date');
 			    /* var event_date_sep = event_date.split('-');
