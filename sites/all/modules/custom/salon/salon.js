@@ -3,7 +3,7 @@
  */
 (function($){
     $(document).ready(function(){
-        $('#edit-date-filter-value-date').datepicker( {
+        $('#edit-date-filter-max-date, #edit-date-filter-min-date').datepicker( {
             changeMonth: true,
             changeYear: true,
             showButtonPanel: true,
