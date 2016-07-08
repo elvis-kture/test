@@ -23,13 +23,17 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 		if (!$form['title']['#default_value']) {
 			$form['title']['#default_value'] = 'Default event title - ' . time();
 		}
-
 		$form['title']['#type'] = 'hidden';
 
-		if (!user_access('administer site configuration')) {
+		if (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'event-calendar') {
 			$form['event_calendar_status']['#access'] = FALSE;
 		}
+		$form['field_salon'][LANGUAGE_NONE]['#options']['_none'] = ' - ' . t('Выбрать адрес') . ' - ';
+//		if (!user_access('administer site configuration')) {
+//			$form['event_calendar_status']['#access'] = FALSE;
+//		}
 	}
+
 	if ($form_id == 'close_day_node_form') {
 		if (!$form['title']['#default_value']) {
 			$form['title']['#default_value'] = t('Закрытый день - ' . $_GET['date'] . ' ' . time());

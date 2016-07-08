@@ -380,8 +380,11 @@ class calendar_plugin_style extends views_plugin_style {
 		$salon_tid = isset($_GET['field_salon_tid']) && (int)$_GET['field_salon_tid'] ? (int)$_GET['field_salon_tid'] : NULL;
 	  $closed_days = views_get_view_result('all_closed_days','block', $salon_tid);
 	  $hacked_days = views_get_view_result('all_closed_days','block_1', $salon_tid);
+	  $on_apprive_days = views_get_view_result('all_closed_days','block_5', $salon_tid);
+
 	  $closed_days_array = array();
 	  $hacked_days_array = array();
+	  $on_apprive_days_array = array();
 
 	  foreach ($closed_days as $c_day) {
 		  $exploded = explode(' ',$c_day->_field_data['nid']['entity']->field_date[LANGUAGE_NONE][0]['value']);
@@ -393,6 +396,12 @@ class calendar_plugin_style extends views_plugin_style {
 		  $exploded = explode(' ',$h_day->_field_data['nid']['entity']->field_date[LANGUAGE_NONE][0]['value']);
 		  $h_day_date = $exploded[0];
 		  $hacked_days_array[$h_day_date] = $h_day_date;
+	  }
+
+	  foreach ($on_apprive_days as $a_day) {
+		  $exploded = explode(' ',$a_day->_field_data['nid']['entity']->field_date[LANGUAGE_NONE][0]['value']);
+		  $a_day_date = $exploded[0];
+		  $on_apprive_days_array[$a_day_date] = $a_day_date;
 	  }
 
 	  /////////////////////////////////
@@ -462,6 +471,7 @@ class calendar_plugin_style extends views_plugin_style {
 
 	        $additional_class = array_key_exists($curday_date, $closed_days_array) ? ' day-closed ' : '';
 	        $additional_class .= array_key_exists($curday_date, $hacked_days_array) ? ' day-hacked ' : '';
+	        $additional_class .= array_key_exists($curday_date, $on_apprive_days_array) ? ' day-on-approve ' : '';
 	        // Add the datebox
           if ($i == 0) {
             $variables = array(

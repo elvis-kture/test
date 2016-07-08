@@ -48,6 +48,11 @@
     color: #ffffff;
     padding: 6px 12px;
 }
+.status-34 {
+    background: orange;
+    color: #ffffff;
+    padding: 6px 12px;
+}
 .menu.nav.navbar-nav li.first.leaf{
     background: red;
 }
@@ -102,6 +107,10 @@ td.day-closed {
 }
 td.day-hacked {
     background-color: #ff1103 !important;
+    color: #ffffff;
+}
+td.day-on-approve {
+    background-color: orange !important;
     color: #ffffff;
 }
 .view .date-nav-wrapper .date-prev{

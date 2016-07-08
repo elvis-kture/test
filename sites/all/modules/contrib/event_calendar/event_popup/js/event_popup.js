@@ -93,9 +93,15 @@
 	    var op = Drupal.settings.event_popup.op;
       if(op) {
         $('table.full tr td, table.mini tr td', context).click(function () {
-//            if ($(this).hasClass('day-closed')) {
-//                return false;
-//            }
+
+            if ($(this).hasClass('day-on-approve')) {
+                var answer = confirm(Drupal.t('Нельзя закрыть день. Есть неутвержденные расходы. Перейти на страницу расходов ?'))
+                if (answer) {
+                    window.location.href = '/masters/today/billing';
+                }
+                return false;
+            }
+
 	    //$('.fc-sun', context).click(function () {
 			  var node_type = Drupal.settings.event_popup.content_type;
         node_type = node_type.replace('_', '-');
