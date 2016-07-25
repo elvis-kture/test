@@ -22,6 +22,9 @@ function salon_init(){
  */
 function salon_form_alter(&$form, &$form_state, $form_id) {
 	if ($form_id == 'event_calendar_node_form') {
+
+		$form['#attributes']['autocomplete'] = 'off';
+
 		if (!$form['title']['#default_value']) {
 			$form['title']['#default_value'] = time();
 		}
@@ -52,6 +55,9 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 	}
 
 	if ($form_id == 'close_day_node_form') {
+
+		$form['#attributes']['autocomplete'] = 'off';
+
 		if (!$form['title']['#default_value']) {
 			$form['title']['#default_value'] = t('Закрытый день - ' . $_GET['date'] . ' ' . time());
 		}
@@ -152,4 +158,54 @@ function undate_bill_node_status($nid, $fields){
 //		->fields($fields)
 //		->condition('entity_id', $nid)
 //		->execute();
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function salon_views_pre_view(&$view, &$display_id, &$args) {
+//	ini_set('xdebug.var_display_max_depth', 15);
+//	echo "<pre>";
+//	var_dump($view->name);
+//	echo "</pre>";
+//	die();
+//	if ($view->name == 'test') {
+//		$view->add_item($view->current_display, 'field', 'views', 'nothing', array(
+//			'label' => 'My field',
+//			'alter' => array('text' => 'asdad<input type="checkbox">'),
+//			'element_class' => 'my-field',
+//			'element_default_classes' => 0,
+//		), 'my_field');
+//	}
+}
+
+/**
+ * Implements hook_menu().
+ */
+function salon_menu() {
+	$items = array();
+
+	$items['ajax/update_submission_status'] = array(
+		'page callback' => 'nowlegal_common_ajax_update_submission_status',
+		'access callback' => 'user_access',
+		'access arguments' => array('administer site configuration'),
+		'type' => MENU_CALLBACK,
+	);
+
+	return $items;
+}
+
+function nowlegal_common_ajax_update_submission_status(){
+	if (isset($_REQUEST['status']) && $_REQUEST['status'] && isset($_REQUEST['sid']) && $_REQUEST['sid']) {
+		$sid = (int)$_REQUEST['sid'];
+		$status = $_REQUEST['status'] == 'true' ? 1 : 0;
+		variable_set('lawyer_plan_status_sid_' . $sid, $status);
+
+		print drupal_json_decode(array('success' => TRUE));
+		die();
+	}
+
+	print drupal_json_decode(array('success' => FALSE));
+	die();
+
 }

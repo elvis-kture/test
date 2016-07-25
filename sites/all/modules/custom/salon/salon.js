@@ -2,7 +2,7 @@
  *  Create the splitter, set the viewport size, and set the position of the scrollbar to the first item.
  */
 (function($){
-//    $(document).ready(function(){
+    $(document).ready(function(){
 //        $('#edit-date-filter-max-date, #edit-date-filter-min-date').datepicker( {
 //            changeMonth: true,
 //            changeYear: true,
@@ -16,5 +16,5 @@
 //        $('body #event-popup-container #cancel-popup').on('click', function (){
 //            alert()
 //        })
-//    })
+    })
 })(jQuery);
