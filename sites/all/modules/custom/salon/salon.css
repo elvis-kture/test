@@ -73,6 +73,7 @@
 
 .page-bills-month aside,
 .page-node-edit aside,
+.page-admin-structure-taxonomy aside,
 .page-node-add aside{
     display: none;
 }
