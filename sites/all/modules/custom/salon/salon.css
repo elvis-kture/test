@@ -37,6 +37,7 @@
 .page-bills-month .col-sm-9,
 .page-node-edit .col-sm-9,
 .page-node-add .col-sm-9,
+.page-admin-structure-taxonomy .col-sm-9,
 .page-masters .col-sm-9{
     width: 100% !important;
 }
