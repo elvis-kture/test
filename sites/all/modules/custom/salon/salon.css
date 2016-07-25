@@ -142,3 +142,7 @@ td.day-on-approve {
     float: left;
     width: 25px;
 }
+
+.back.button{
+    float: right;
+}

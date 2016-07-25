@@ -140,6 +140,7 @@
       <a id="main-content"></a>
       <?php print render($title_prefix); ?>
       <?php if (!empty($title)): ?>
+	      <?php print l(t('< Вернуться'), '<front>', array('attributes' => array('class' => array('back button btn btn-success form-submit')))) ?>
         <h1 class="page-header"><?php print $title; ?></h1>
       <?php endif; ?>
       <?php print render($title_suffix); ?>
