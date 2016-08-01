@@ -149,9 +149,9 @@ td.day-on-approve {
 .back.button{
     float: right;
 }
-.views-field-expression.color{
+.views-field-expression{
     background-color: greenyellow;
 }
-.views-field-expression.color-{
+td[class^="views-field views-field-expression color-"]{
     background-color: pink;
 }
