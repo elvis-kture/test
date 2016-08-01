@@ -9,8 +9,11 @@ define('NORMAL_STATUS_EVENT_TID', 12);
 define('ON_APPROVE_STATUS_EVENT_TID', 35);
 
 function salon_init(){
+
 	if (drupal_is_front_page()) {
-		drupal_goto('masters/today/billing');
+		if (!drupal_is_cli()) {
+			drupal_goto('masters/today/billing');
+		}
 	}
 
 	drupal_add_css(drupal_get_path('module', 'salon') .'/salon.css');

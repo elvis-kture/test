@@ -139,8 +139,12 @@
       <?php if (!empty($breadcrumb)): print $breadcrumb; endif;?>
       <a id="main-content"></a>
       <?php print render($title_prefix); ?>
-      <?php if (!empty($title)): ?>
+      <?php if (!$user || !$user->uid): ?>
+	      <?php print l(t('Войти'), 'user', array('attributes' => array('class' => array('back button btn btn-success form-submit')))) ?>
+      <?php else: ?>
 	      <?php print l(t('< Вернуться'), '<front>', array('attributes' => array('class' => array('back button btn btn-success form-submit')))) ?>
+      <?php endif; ?>
+      <?php if (!empty($title)): ?>
         <h1 class="page-header"><?php print $title; ?></h1>
       <?php endif; ?>
       <?php print render($title_suffix); ?>
