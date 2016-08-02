@@ -9,5 +9,5 @@ a[href="/admin/structure/taxonomy/service/fields"],
 a[href="/admin/structure/taxonomy/salon/fields"],
 a[href="/admin/structure/taxonomy/service/display"],
 a[href="/admin/structure/taxonomy/salon/display"]{
-
+    display: none;
 }
