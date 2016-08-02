@@ -1,0 +1,13 @@
+#admin-menu,
+#toolbar{
+    display: none;
+}
+body.toolbar-drawer.admin-menu{
+    padding-top: 0px !important;
+}
+a[href="/admin/structure/taxonomy/service/fields"],
+a[href="/admin/structure/taxonomy/salon/fields"],
+a[href="/admin/structure/taxonomy/service/display"],
+a[href="/admin/structure/taxonomy/salon/display"]{
+
+}
