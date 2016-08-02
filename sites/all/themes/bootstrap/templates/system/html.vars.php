@@ -57,6 +57,7 @@ function bootstrap_preprocess_html(&$variables) {
       $variables['body_attributes_array']['class'][] = 'navbar-is-static-top';
       break;
   }
+	$variables['body_attributes_array']['class'][] = 'uid-' . $variables['user']->uid;
 }
 
 /**
