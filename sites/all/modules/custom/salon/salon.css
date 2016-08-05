@@ -155,3 +155,6 @@ td.day-on-approve {
 td[class^="views-field views-field-expression color-"]{
     background-color: pink;
 }
+.container-inline-date .form-item input#edit-field-date-und-0-value-datepicker-popup-0 {
+    width: 100%;
+}
