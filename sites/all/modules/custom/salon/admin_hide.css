@@ -12,5 +12,5 @@ a[href="/admin/structure/taxonomy/salon/display"]{
     display: none !important;
 }
 .container-inline-date .form-item input#edit-field-date-und-0-value-datepicker-popup-0 {
-    width: auto;
+    width: 100%;
 }
