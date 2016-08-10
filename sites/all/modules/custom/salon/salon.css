@@ -171,3 +171,9 @@ td[class^="views-field views-field-expression color-"]{
 #edit-submit-test.btn-default{
     background-color: #78d8fd;
 }
+#edit-field-pay-type-tid,
+#edit-field-pay-format-tid,
+#edit-field-articul-tid,
+#edit-field-salon-tid{
+    width: 100px;
+}
