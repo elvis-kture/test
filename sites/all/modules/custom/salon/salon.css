@@ -158,3 +158,12 @@ td[class^="views-field views-field-expression color-"]{
 .container-inline-date .form-item input#edit-field-date-und-0-value-datepicker-popup-0 {
     width: 100%;
 }
+#edit-date-filter-min-wrapper,
+#edit-date-filter-max-wrapper{
+    width: 140px;
+    float: left;
+}
+#edit-date-filter-min-wrapper input,
+#edit-date-filter-max-wrapper input{
+    width: 100px;
+}
