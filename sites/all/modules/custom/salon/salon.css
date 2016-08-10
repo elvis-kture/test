@@ -167,3 +167,7 @@ td[class^="views-field views-field-expression color-"]{
 #edit-date-filter-max-wrapper input{
     width: 100px;
 }
+
+#edit-submit-test.btn-default{
+    background-color: #78d8fd;
+}
