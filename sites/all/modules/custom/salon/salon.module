@@ -155,6 +155,46 @@ function salon_node_insert($node){
 	}
 }
 
+function salon_node_update($node){
+	if (
+		$node->type == variable_get('bill_node_type', BILL_NODE_TYPE)
+		&& $node->field_pay_format[LANGUAGE_NONE]['0']['tid'] == PAY_FORMAT_WITHOUT_CASH_TID
+	) {
+		$old_node = $node->original;
+		$old_value = (float)$old_node->field_costs[LANGUAGE_NONE]['0']['value'];
+		$new_value = (float)$node->field_costs[LANGUAGE_NONE]['0']['value'];
+
+		if ($old_value != $new_value || $node->field_pay_type[LANGUAGE_NONE]['0']['tid'] != $old_node->field_pay_type[LANGUAGE_NONE]['0']['tid']) {// If Costs changed or pay type
+
+			$salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
+			$isset_node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+
+			if ($isset_node_balance_nid) {
+
+				$balance_check = node_load($isset_node_balance_nid);
+				$balance_amount = (float)$balance_check->field_costs[LANGUAGE_NONE]['0']['value'];
+				$check_anount = $new_value - $old_value;
+
+				if ($node->field_pay_type[LANGUAGE_NONE]['0']['tid'] == PAY_TYPE_CREDIT_TID) {
+						$balance_check->field_costs[LANGUAGE_NONE]['0']['value'] = $balance_amount - abs($check_anount);
+				}
+				else {
+					if ($check_anount < 0) {
+						$balance_check->field_costs[LANGUAGE_NONE]['0']['value'] = $balance_amount - abs($check_anount);
+					}
+					else {
+						$balance_check->field_costs[LANGUAGE_NONE]['0']['value'] = $balance_amount + $check_anount;
+					}
+				}
+
+				node_save($balance_check);
+			}
+		}
+
+
+	}
+}
+
 function salon_node_presave($node){
 	global $user;
 
