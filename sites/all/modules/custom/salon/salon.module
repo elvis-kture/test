@@ -3,9 +3,12 @@
 define('RED_STATUS_TID', 25);
 define('DAY_IN_SECONDS', 3600*24);
 define('BILL_NODE_TYPE', 'event_calendar');
+define('BALANCE_NODE_TYPE', 'balance_check');
 define('CLOSE_DAY_NODE_TYPE', 'close_day');
 define('GREEN_STATUS_EVENT_TID', 11);
 define('NORMAL_STATUS_EVENT_TID', 12);
+define('PAY_FORMAT_WITHOUT_CASH_TID', 30);
+define('PAY_TYPE_CREDIT_TID', 32);
 define('ON_APPROVE_STATUS_EVENT_TID', 35);
 
 function salon_init(){
@@ -98,6 +101,18 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 		);
 		$form['actions']['submit']['#submit'][] = '_salon_close_day_node_form_submit';
 	}
+	if ($form_id == 'balance_check_node_form') {
+		$form['field_salon'][LANGUAGE_NONE]['#options']['_none'] = ' - ' . t('Выбрать адрес') . ' - ';
+		$form['#validate'][] = 'balance_check_form_validate';
+	}
+}
+
+function balance_check_form_validate($form, &$form_state){
+	$salon_tid = $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'];
+	$node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+	if ($node_balance_nid) {
+		form_set_error('field_salon', t('Баланс для этого адреса уже существует. !link', array('!link' => l(t('Ссылка'), 'node/' . $node_balance_nid  . '/edit'))));
+	}
 }
 
 function _salon_close_day_node_form_submit($form, &$form_state){
@@ -106,6 +121,38 @@ function _salon_close_day_node_form_submit($form, &$form_state){
 	$date_string = '/' . $date_array[0] . '-' . $date_array[1];
 
 	$form_state['redirect'] = array('bills/month' . $date_string, array('query' => array('field_salon_tid' => $salon_tid)));
+}
+
+function salon_node_insert($node){
+	if (
+		$node->type == variable_get('bill_node_type', BILL_NODE_TYPE)
+		&& $node->field_pay_format[LANGUAGE_NONE]['0']['tid'] == PAY_FORMAT_WITHOUT_CASH_TID
+	) {
+		$salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
+		$isset_node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+
+		if ($isset_node_balance_nid) {
+			$balance_check = node_load($isset_node_balance_nid);
+			$balance_amount = (float)$balance_check->field_costs[LANGUAGE_NONE]['0']['value'];
+			$check_anount = (float)$node->field_costs[LANGUAGE_NONE]['0']['value'];
+
+			if ($node->field_pay_type[LANGUAGE_NONE]['0']['tid'] == PAY_TYPE_CREDIT_TID) {
+					$balance_check->field_costs[LANGUAGE_NONE]['0']['value'] = $balance_amount - abs($check_anount);
+			}
+			else {
+				if ($check_anount < 0) {
+					$balance_check->field_costs[LANGUAGE_NONE]['0']['value'] = $balance_amount - abs($check_anount);
+				}
+				else {
+					$balance_check->field_costs[LANGUAGE_NONE]['0']['value'] = $balance_amount + $check_anount;
+				}
+			}
+
+
+			node_save($balance_check);
+		}
+
+	}
 }
 
 function salon_node_presave($node){
@@ -216,4 +263,21 @@ function nowlegal_common_ajax_update_submission_status(){
 	print drupal_json_decode(array('success' => FALSE));
 	die();
 
+}
+
+function get_node_by_field($type = 'balance_check', $tid){
+	$query = new EntityFieldQuery();
+
+	$query->entityCondition('entity_type', 'node')
+		->entityCondition('bundle', $type)
+		->propertyCondition('status', NODE_PUBLISHED)
+		->fieldCondition('field_salon', 'tid', $tid)
+		->range(0, 1);
+
+	$result = $query->execute();
+
+	if (isset($result['node'])) {
+		return key($result['node']);
+	}
+	return false;
 }

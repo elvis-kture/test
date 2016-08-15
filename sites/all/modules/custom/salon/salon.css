@@ -155,6 +155,10 @@ td.day-on-approve {
 td[class^="views-field views-field-expression color-"]{
     background-color: pink;
 }
+th[class^="views-field views-field-expression color-"]{
+    background-color: transparent;
+    border: 1px solid #000000;
+}
 .container-inline-date .form-item input#edit-field-date-und-0-value-datepicker-popup-0 {
     width: 100%;
 }
@@ -177,3 +181,10 @@ td[class^="views-field views-field-expression color-"]{
 #edit-field-salon-tid{
     width: 100px;
 }
+a.sub-title-balance{
+    font-size: 16px;
+}
+/*tr.balance_check,*/
+/*#views-aggregator-datatable .views-field.views-field-type{*/
+    /*display: none;*/
+/*}*/
