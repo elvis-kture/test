@@ -32,7 +32,7 @@
     border-top: 1px solid #000000;
 }
 .views-table .views-field.views-field-field-date-1{
-    /*float: right;*/
+    min-width: 100px;
 }
 .page-bills-month .col-sm-9,
 .page-node-edit .col-sm-9,
@@ -192,9 +192,11 @@ a.sub-title-balance{
 .view-id-test.view-display-id-page_1 tbody tr{
     display: none;
 }
+.view-id-test.view-display-id-page #edit-field-salon-tid,
 .view-id-test.view-display-id-page_1 #edit-field-salon-tid{
     width: 100%;
 }
+.view-id-test.view-display-id-page #edit-field-salon-tid option,
 .view-id-test.view-display-id-page_1 #edit-field-salon-tid option{
     margin: 5px 0;
     border: 1px solid lightgray;
