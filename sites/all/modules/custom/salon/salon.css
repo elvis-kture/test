@@ -107,7 +107,7 @@
 }
 .vertical-tabs-panes,
 .tabbable.tabs-left.vertical-tabs{
-    /*display: none;*/
+    display: none;
 }
 td.day-closed {
     background-color: #048e22 !important;
