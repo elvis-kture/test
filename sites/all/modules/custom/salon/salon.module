@@ -106,7 +106,7 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 			$form['#validate'][] = 'balance_check_form_validate';
 		}
 		if (arg(0) == 'node' && arg(2) == 'edit') {
-			$form['field_salon']['#attributes']['disabled'] = 'disabled';
+			$form['field_salon']['#disabled'] = TRUE;
 		}
 		$form['field_salon'][LANGUAGE_NONE]['#options']['_none'] = ' - ' . t('Выбрать адрес') . ' - ';
 	}
