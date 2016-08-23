@@ -107,7 +107,7 @@
 }
 .vertical-tabs-panes,
 .tabbable.tabs-left.vertical-tabs{
-    display: none;
+    /*display: none;*/
 }
 td.day-closed {
     background-color: #048e22 !important;
@@ -188,3 +188,17 @@ a.sub-title-balance{
 /*#views-aggregator-datatable .views-field.views-field-type{*/
     /*display: none;*/
 /*}*/
+
+.view-id-test.view-display-id-page_1 tbody tr{
+    display: none;
+}
+.view-id-test.view-display-id-page_1 #edit-field-salon-tid{
+    width: 100%;
+}
+.view-id-test.view-display-id-page_1 #edit-field-salon-tid option{
+    margin: 5px 0;
+    border: 1px solid lightgray;
+}
+.page-node-revisions-view td.diff-links{
+    display: none;
+}
