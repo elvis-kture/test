@@ -278,11 +278,23 @@ function salon_node_presave($node){
 						'bundle' => BILL_NODE_TYPE,
 						'event_calendar_status_tid' => GREEN_STATUS_EVENT_TID,
 					);
-					undate_bill_node_status($values->nid, $fields);
+					update_bill_node_status($values->nid, $fields);
 				}
 			}
 		}
 	}
+}
+
+function update_bill_node_status($nid, $fields){
+
+//	db_update('field_data_event_calendar_status')
+//		->fields($fields)
+//		->condition('entity_id', $nid)
+//		->execute();
+//	db_update('field_revision_event_calendar_status')
+//		->fields($fields)
+//		->condition('entity_id', $nid)
+//		->execute();
 }
 
 /**
