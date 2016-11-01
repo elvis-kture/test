@@ -14,9 +14,13 @@
     })
     function check_pay_type($node) {
         if ($node.val() != '30') {
-            $perekidka = $('label[for="edit-field-pay-type-und-85"]')
-            $perekidka.hide().parent().hide()
-            $perekidka.children('input').removeAttr('checked')
+            $perekidka_local = $('label[for="edit-field-pay-type-und-85"]')
+            $perekidka_local.hide().parent().hide()
+            $perekidka_local.children('input').removeAttr('checked')
+
+            $perekidka_dev = $('label[for="edit-field-pay-type-und-111"]')
+            $perekidka_dev.hide().parent().hide()
+            $perekidka_dev.children('input').removeAttr('checked')
         }
         else {
             $perekidka.show().parent().show()
@@ -25,7 +29,7 @@
     function check_pay_format($node) {
         $perekidka_address = $('.field-name-field-perekidka-balance')
 
-        if ($node.val() != '85') {
+        if ($node.val() != '85' || $node.val() != '111') {
             $perekidka_address.hide()
             $('#edit-field-perekidka-balance-und').val('_none')
         }
