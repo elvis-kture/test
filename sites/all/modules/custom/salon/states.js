@@ -30,7 +30,7 @@
     function check_pay_format($node) {
         $perekidka_address = $('.field-name-field-perekidka-balance')
 
-        if ($node.val() != '85' || $node.val() != '111') {
+        if ($node.val() != '85' && $node.val() != '111') {
             $perekidka_address.hide()
             $('#edit-field-perekidka-balance-und').val('_none')
         }
