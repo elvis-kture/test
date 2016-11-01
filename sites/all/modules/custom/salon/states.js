@@ -13,17 +13,18 @@
         })
     })
     function check_pay_type($node) {
-        if ($node.val() != '30') {
             $perekidka_local = $('label[for="edit-field-pay-type-und-85"]')
+            $perekidka_dev = $('label[for="edit-field-pay-type-und-111"]')
+        if ($node.val() != '30') {
             $perekidka_local.hide().parent().hide()
             $perekidka_local.children('input').removeAttr('checked')
 
-            $perekidka_dev = $('label[for="edit-field-pay-type-und-111"]')
             $perekidka_dev.hide().parent().hide()
             $perekidka_dev.children('input').removeAttr('checked')
         }
         else {
-            $node.show().parent().show()
+            $perekidka_local.show().parent().show()
+            $perekidka_dev.show().parent().show()
         }
     }
     function check_pay_format($node) {
