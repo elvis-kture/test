@@ -23,7 +23,7 @@
             $perekidka_dev.children('input').removeAttr('checked')
         }
         else {
-            $perekidka.show().parent().show()
+            $node.show().parent().show()
         }
     }
     function check_pay_format($node) {
