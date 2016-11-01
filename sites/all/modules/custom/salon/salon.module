@@ -164,16 +164,40 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 			$form['#validate'][] = 'balance_check_form_validate';
 		}
 		if (arg(0) == 'node' && arg(2) == 'edit') {
-
+            $form['#after_build'][] = 'make_readonly_after_build';
 			/**
 			 * !!!
 			 * Not allow edit Balance-check node
 			 */
-			drupal_goto('balance');
+            $form['field_salon'][LANGUAGE_NONE]['#attributes']['disabled'] = TRUE;
+            $form['field_costs'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
+            $form['field_date'][LANGUAGE_NONE][0]['#attributes']['readonly'] = 'readonly';
+            $form['field_date'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
+            $form['field_date'][LANGUAGE_NONE][0]['value']['#attributes']['disabled'] = TRUE;
+            $form['field_date'][LANGUAGE_NONE]['#attributes']['readonly'] = 'readonly';
+            $form['field_date']['#attributes']['readonly'] = 'readonly';
+            $form['field_date'][LANGUAGE_NONE][0]['#attributes']['disabled'] = TRUE;
+            $form['field_date'][LANGUAGE_NONE][0]['value']['date']['#attributes']['disabled'] = TRUE;
+            $form['field_date'][LANGUAGE_NONE][0]['value']['date']['#attributes']['readonly'] = 'readonly';
+            $form['field_date'][LANGUAGE_NONE]['#attributes']['disabled'] = TRUE;
+            $form['field_date'][LANGUAGE_NONE][0]['#entity']->field_date['#attributes']['disabled'] = TRUE;
+            $form['field_date'][LANGUAGE_NONE][0]['#entity']->field_date['#attributes']['readonly'] = 'readonly';
+//            $form['field_date']['#attributes']['onclick'] = 'alert()';
+//            ini_set('xdebug.var_display_max_depth', 15);
+//            echo "<pre>";
+//            var_dump($form['field_date'][LANGUAGE_NONE][0]['value']);
+//            echo "</pre>";
+//            die();
 
-		}
-		$form['field_salon'][LANGUAGE_NONE]['#options']['_none'] = ' - ' . t('Выбрать адрес') . ' - ';
+        }
 	}
+}
+
+function make_readonly_after_build($form, &$form_state) {
+    $field = 'field_date';
+    $form[$field]['und'][0]['value']['#attributes']['readonly'] = 'readonly';
+    $form_state['values'][$field]['und'][0]['value'] = $form[$field]['und'][0]['value']['#default_value'];
+    return $form;
 }
 
 function balance_check_form_validate($form, &$form_state){
