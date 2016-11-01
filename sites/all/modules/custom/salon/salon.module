@@ -164,40 +164,10 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 			$form['#validate'][] = 'balance_check_form_validate';
 		}
 		if (arg(0) == 'node' && arg(2) == 'edit') {
-            $form['#after_build'][] = 'make_readonly_after_build';
-			/**
-			 * !!!
-			 * Not allow edit Balance-check node
-			 */
             $form['field_salon'][LANGUAGE_NONE]['#attributes']['disabled'] = TRUE;
             $form['field_costs'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
-            $form['field_date'][LANGUAGE_NONE][0]['#attributes']['readonly'] = 'readonly';
-            $form['field_date'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
-            $form['field_date'][LANGUAGE_NONE][0]['value']['#attributes']['disabled'] = TRUE;
-            $form['field_date'][LANGUAGE_NONE]['#attributes']['readonly'] = 'readonly';
-            $form['field_date']['#attributes']['readonly'] = 'readonly';
-            $form['field_date'][LANGUAGE_NONE][0]['#attributes']['disabled'] = TRUE;
-            $form['field_date'][LANGUAGE_NONE][0]['value']['date']['#attributes']['disabled'] = TRUE;
-            $form['field_date'][LANGUAGE_NONE][0]['value']['date']['#attributes']['readonly'] = 'readonly';
-            $form['field_date'][LANGUAGE_NONE]['#attributes']['disabled'] = TRUE;
-            $form['field_date'][LANGUAGE_NONE][0]['#entity']->field_date['#attributes']['disabled'] = TRUE;
-            $form['field_date'][LANGUAGE_NONE][0]['#entity']->field_date['#attributes']['readonly'] = 'readonly';
-//            $form['field_date']['#attributes']['onclick'] = 'alert()';
-//            ini_set('xdebug.var_display_max_depth', 15);
-//            echo "<pre>";
-//            var_dump($form['field_date'][LANGUAGE_NONE][0]['value']);
-//            echo "</pre>";
-//            die();
-
         }
 	}
-}
-
-function make_readonly_after_build($form, &$form_state) {
-    $field = 'field_date';
-    $form[$field]['und'][0]['value']['#attributes']['readonly'] = 'readonly';
-    $form_state['values'][$field]['und'][0]['value'] = $form[$field]['und'][0]['value']['#default_value'];
-    return $form;
 }
 
 function balance_check_form_validate($form, &$form_state){
@@ -226,7 +196,7 @@ function check_form_validate($form, &$form_state){
         || $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_DEV
     ) {
 		$form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] = PAY_TYPE_CREDIT_TID;
-		create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form['#node']);
+        create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form_state['values']);
 	}
 
 }
@@ -305,7 +275,7 @@ function salon_node_insert($node){
 function create_programmatically_bill($perekidka_salon_tid, &$source_bill_node) {
 	global $user;
 	$perekidka_salon = taxonomy_term_load($perekidka_salon_tid);
-	$source_salon = taxonomy_term_load($source_bill_node['field_salon'][LANGUAGE_NONE][0]['tid']);
+    $source_salon = taxonomy_term_load($source_bill_node['field_salon'][LANGUAGE_NONE][0]['tid']);
 
 	$node = new stdClass();
 	$node->type = 'event_calendar';
@@ -324,7 +294,7 @@ function create_programmatically_bill($perekidka_salon_tid, &$source_bill_node) 
 	$node->body['und'][0]['format'] = 3;
 	$node->body['und'][0]['value'] = t('Перекидка из !salon', array('!salon' => $source_salon->name));
 
-	$source_bill_node->body['und'][0]['value'] = t('Перекидка в !salon', array('!salon' => $perekidka_salon->name));
+    $source_bill_node['body']['und'][0]['value'] = t('Перекидка в !salon', array('!salon' => $perekidka_salon->name));
 
 	$node->revision = TRUE;
 	$node->comment = 1;
@@ -332,13 +302,14 @@ function create_programmatically_bill($perekidka_salon_tid, &$source_bill_node) 
 
 	//Bill fields
 	$node->field_salon = array(LANGUAGE_NONE => array(array('tid' => $perekidka_salon_tid)));
-	$node->field_pay_type = array(LANGUAGE_NONE => array(array('value' => PAY_TYPE_DEBIT_TID)));
-	$node->field_pay_format = $source_bill_node->field_pay_format;
-	$node->field_date = $source_bill_node->field_date;
-	$node->field_articul = $source_bill_node->field_articul;
-	$node->field_costs = $source_bill_node->field_costs;
-	$node->event_calendar_status = $source_bill_node->event_calendar_status;
+	$node->field_pay_type = array(LANGUAGE_NONE => array(array('tid' => PAY_TYPE_DEBIT_TID)));
+	$node->field_pay_format = $source_bill_node['field_pay_format'];
+	$node->field_date = $source_bill_node['field_date'];
+	$node->field_articul = $source_bill_node['field_articul'];
+	$node->field_costs = $source_bill_node['field_costs'];
+	$node->event_calendar_status = $source_bill_node['event_calendar_status'];
 	$node->field_perekidka_balance = array();
+
 	$node = node_submit($node);
 	node_save($node);
 }
