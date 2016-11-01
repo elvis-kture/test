@@ -9,7 +9,9 @@ define('GREEN_STATUS_EVENT_TID', 11);
 define('NORMAL_STATUS_EVENT_TID', 12);
 define('PAY_FORMAT_WITHOUT_CASH_TID', 30);
 define('PAY_TYPE_CREDIT_TID', 32);
+define('PAY_TYPE_DEBIT_TID', 31);
 define('ON_APPROVE_STATUS_EVENT_TID', 35);
+define('PAY_TYPE_PEREKIDKA_TID', 85);
 
 function salon_init(){
 	global $user;
@@ -29,12 +31,66 @@ function salon_init(){
 }
 
 /**
+ * AJAX callback for loading node list
+ */
+function form_ajax_form_load_nodes($form, $form_state) {
+	// Возвращаем элемент формы, который должен быть перезагружен.
+	// В данном случае надо перезагрузить выпадающий список с материалами.
+	return $form['node'];
+}
+
+
+//function metabetting_main_update_signup_link_callback(&$form, $form_state) {
+//	if ($form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == 85) {
+//		$form['list'] = array(
+//			'#title' => t('Crust Size'),
+//			'#type' => 'select',
+//			'#description' => 'Select the desired pizza crust size.',
+//			'#options' => array(t('--- SELECT ---'), t('10"'), t('12"'), t('16"')),
+//		);
+//	}
+//	return array(
+//		'#type' => 'ajax',
+//		'#commands' => array(
+//			ajax_command_replace("#field_pay_type_list_wrapper", render($form['list'])),
+//		)
+//	);
+//}
+
+/**
  * Implements hook_form_alter().
  */
 function salon_form_alter(&$form, &$form_state, $form_id) {
 	if ($form_id == 'event_calendar_node_form') {
 
+		drupal_add_js(drupal_get_path('module', 'salon') .'/states.js');
+
+		$form['#validate'][] = 'check_form_validate';
+
 		$form['#attributes']['autocomplete'] = 'off';
+
+//		$form['field_pay_type']['und']['#ajax'] = array(
+//			'callback' => 'metabetting_main_update_signup_link_callback',
+//			'wrapper' => array('field_pay_type_wrapper'),
+//			'event' => 'change',
+//			'method' => 'replace',
+//		);
+//
+//		$form['markup'] = array(
+//			'#prefix' => '<div id = "field_pay_type_list_wrapper">',
+//			'#suffix' => '</div>',
+//			'#markup' => '',
+//		);
+
+		if ($form['field_perekidka_balance'] && arg(2) == 'edit' ) {
+			$term_name = explode(' ', $form['#node']->body[LANGUAGE_NONE][0]['value'])[2];
+			$salon = taxonomy_get_term_by_name($term_name);
+			$form['field_perekidka_balance'][LANGUAGE_NONE]['#default_value'] = key($salon);
+
+			$form['body'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
+			$form['field_perekidka_balance'][LANGUAGE_NONE]['#attributes']['disabled'] = TRUE;
+		}
+
 
 		if (!$form['title']['#default_value']) {
 			$form['title']['#default_value'] = t('Чек');
@@ -101,12 +157,19 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 		);
 		$form['actions']['submit']['#submit'][] = '_salon_close_day_node_form_submit';
 	}
+
 	if ($form_id == 'balance_check_node_form') {
-		if (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'balance_check') {
+		if (arg(0) == 'node' && arg(1) == 'add' && arg(2) == 'balance-check') {
 			$form['#validate'][] = 'balance_check_form_validate';
 		}
 		if (arg(0) == 'node' && arg(2) == 'edit') {
-			$form['field_salon']['#disabled'] = TRUE;
+
+			/**
+			 * !!!
+			 * Not allow edit Balance-check node
+			 */
+			drupal_goto('balance');
+
 		}
 		$form['field_salon'][LANGUAGE_NONE]['#options']['_none'] = ' - ' . t('Выбрать адрес') . ' - ';
 	}
@@ -116,8 +179,28 @@ function balance_check_form_validate($form, &$form_state){
 	$salon_tid = $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'];
 	$node_balance_nid = get_node_by_field('balance_check', $salon_tid);
 	if ($node_balance_nid) {
-		form_set_error('field_salon', t('Баланс для этого адреса уже существует. !link', array('!link' => l(t('Ссылка'), 'node/' . $node_balance_nid  . '/edit'))));
+		form_set_error('field_salon', t('Баланс для этого адреса уже существует.'));
 	}
+}
+function check_form_validate($form, &$form_state){
+	$salon_tid = $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'];
+	$bill_date = $form_state['values']['field_date'][LANGUAGE_NONE][0]['value'];
+	$node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+
+	if ($node_balance_nid) {
+		$node_balance = node_load($node_balance_nid->nid);
+
+		if ($node_balance->field_date && $node_balance->field_date[LANGUAGE_NONE][0]['value'] && $bill_date < $node_balance->field_date[LANGUAGE_NONE][0]['value']) {
+			form_set_error('field_date', t('Безнал для данного адреса заведен позже даты создания чека.'));
+		}
+
+	}
+
+	if ($form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID) {
+		$form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] = PAY_TYPE_CREDIT_TID;
+		create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form['#node']);
+	}
+
 }
 
 function _salon_close_day_node_form_submit($form, &$form_state){
@@ -191,11 +274,53 @@ function salon_node_insert($node){
 	}
 }
 
+function create_programmatically_bill($perekidka_salon_tid, &$source_bill_node) {
+	global $user;
+	$perekidka_salon = taxonomy_term_load($perekidka_salon_tid);
+	$source_salon = taxonomy_term_load($source_bill_node['field_salon'][LANGUAGE_NONE][0]['tid']);
+
+	$node = new stdClass();
+	$node->type = 'event_calendar';
+	node_object_prepare($node);
+	$node->status = 1;
+	$node->uid = $user->uid;
+	$node->name = $user->name;
+	$node->title = t('Перекидка за !salon', array('!salon' => $perekidka_salon->name));
+	$node->promote = 1;
+	$node->created = time();
+	$node->changed = time();
+	$node->timestamp = time();
+	$node->sticky = 0;
+	$node->format = 3;
+	$node->language = 'en';
+	$node->body['und'][0]['format'] = 3;
+	$node->body['und'][0]['value'] = t('Перекидка из !salon', array('!salon' => $source_salon->name));
+
+	$source_bill_node->body['und'][0]['value'] = t('Перекидка в !salon', array('!salon' => $perekidka_salon->name));
+
+	$node->revision = TRUE;
+	$node->comment = 1;
+	$node->is_new = TRUE;
+
+	//Bill fields
+	$node->field_salon = array(LANGUAGE_NONE => array(array('tid' => $perekidka_salon_tid)));
+	$node->field_pay_type = array(LANGUAGE_NONE => array(array('value' => PAY_TYPE_DEBIT_TID)));
+	$node->field_pay_format = $source_bill_node->field_pay_format;
+	$node->field_date = $source_bill_node->field_date;
+	$node->field_articul = $source_bill_node->field_articul;
+	$node->field_costs = $source_bill_node->field_costs;
+	$node->event_calendar_status = $source_bill_node->event_calendar_status;
+	$node->field_perekidka_balance = array();
+	$node = node_submit($node);
+	node_save($node);
+}
+
 function salon_node_update($node){
 	if (
 		$node->type == variable_get('bill_node_type', BILL_NODE_TYPE)
 		&& $node->field_pay_format[LANGUAGE_NONE]['0']['tid'] == PAY_FORMAT_WITHOUT_CASH_TID
 	) {
+
 		$old_node = $node->original;
 		$old_value = (float)$old_node->field_costs[LANGUAGE_NONE]['0']['value'];
 		$new_value = (float)$node->field_costs[LANGUAGE_NONE]['0']['value'];
