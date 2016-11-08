@@ -33,8 +33,10 @@
         if ($node.val() != '85' && $node.val() != '111') {
             $perekidka_address.hide()
             $('#edit-field-perekidka-balance-und').val('_none')
+            $('.autocomplete-deluxe-container').show()
         }
         else {
+            $('.autocomplete-deluxe-container').hide()
             $perekidka_address.show()
         }
     }
