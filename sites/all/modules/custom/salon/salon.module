@@ -13,6 +13,7 @@ define('PAY_TYPE_DEBIT_TID', 31);
 define('ON_APPROVE_STATUS_EVENT_TID', 35);
 define('PAY_TYPE_PEREKIDKA_TID_LOCAL', 85);
 define('PAY_TYPE_PEREKIDKA_TID_DEV', 111);
+define('PAY_TYPE_PEREKIDKA_TID_MASTER', 112);
 
 function salon_init(){
 	global $user;
@@ -209,6 +210,7 @@ function check_form_validate($form, &$form_state){
 
 	if (
         ($form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_LOCAL
+        || $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_MASTER
         || $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_DEV) && !form_get_errors()
     ) {
         $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] = PAY_TYPE_CREDIT_TID;
