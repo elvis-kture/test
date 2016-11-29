@@ -89,7 +89,7 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 			$salon = taxonomy_get_term_by_name($term_name);
 			$form['field_perekidka_balance'][LANGUAGE_NONE]['#default_value'] = key($salon);
 
-			$form['body'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
+//			$form['body'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
 			$form['field_perekidka_balance'][LANGUAGE_NONE]['#attributes']['disabled'] = TRUE;
 		} else {
             foreach ($form['field_perekidka_balance'][LANGUAGE_NONE]['#options'] as $option_tid_salon => $name) {
