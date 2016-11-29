@@ -29,6 +29,7 @@
         else {
             $perekidka_local.show().parent().show()
             $perekidka_dev.show().parent().show()
+            $perekidka_master.show().parent().show()
         }
     }
     function check_pay_format($node) {
