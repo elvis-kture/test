@@ -193,6 +193,7 @@ function balance_check_form_validate($form, &$form_state){
 		form_set_error('field_salon', t('Баланс для этого адреса уже существует.'));
 	}
 }
+
 function check_form_validate($form, &$form_state){
 
 	$salon_tid = $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'];
@@ -217,6 +218,10 @@ function check_form_validate($form, &$form_state){
         create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form_state['values']);
 	}
 
+    if($form_state['values']['field_is_public'][LANGUAGE_NONE][0]['value'] && $form_state['values']['field_shared_address'][LANGUAGE_NONE][0]['target_id']){
+        $public_bill_nid = node_load($form_state['values']['field_shared_address'][LANGUAGE_NONE][0]['target_id']);
+
+    }
 }
 
 function _salon_close_day_node_form_submit($form, &$form_state){
@@ -232,8 +237,14 @@ function salon_node_delete($node){
 		$node->type == variable_get('bill_node_type', BILL_NODE_TYPE)
 		&& $node->field_pay_format[LANGUAGE_NONE]['0']['tid'] == PAY_FORMAT_WITHOUT_CASH_TID
 	) {
-		$salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
-		$isset_node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+        //if is public without cash ballace operation
+        if ($node->field_is_public[LANGUAGE_NONE][0]['value'] && $node->field_shared_address[LANGUAGE_NONE][0]['34116']) {
+            $isset_node_balance_nid = $node->field_shared_address[LANGUAGE_NONE][0]['34116'];
+        }
+        else {
+            $salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
+            $isset_node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+        }
 
 		if ($isset_node_balance_nid) {
 			$balance_check = is_integer($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
@@ -258,13 +269,23 @@ function salon_node_delete($node){
 
 	}
 }
+
 function salon_node_insert($node){
 	if (
 		$node->type == variable_get('bill_node_type', BILL_NODE_TYPE)
 		&& $node->field_pay_format[LANGUAGE_NONE]['0']['tid'] == PAY_FORMAT_WITHOUT_CASH_TID
 	) {
-		$salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
-		$isset_node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+        //if is public without cash ballace operation
+        if ($node->field_is_public[LANGUAGE_NONE][0]['value'] && $node->field_shared_address[LANGUAGE_NONE][0]['34116']) {
+            $isset_node_balance_nid = $node->field_shared_address[LANGUAGE_NONE][0]['34116'];
+        }
+        else {
+            $salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
+            $isset_node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+        }
+
+
+
 
 		if ($isset_node_balance_nid) {
 			$balance_check = is_integer($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);

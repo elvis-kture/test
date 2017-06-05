@@ -201,6 +201,12 @@ a.sub-title-balance{
     margin: 5px 0;
     border: 1px solid lightgray;
 }
+
 .page-node-revisions-view td.diff-links{
     display: none;
+}
+
+.field-name-field-is-public{
+    display: none;
+    clear: both;
 }
