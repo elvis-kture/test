@@ -10,9 +10,9 @@ define('NORMAL_STATUS_EVENT_TID', 12);
 define('PAY_FORMAT_WITHOUT_CASH_TID', 30);
 define('PAY_TYPE_CREDIT_TID', 32);
 define('PAY_TYPE_DEBIT_TID', 31);
+define('PAY_FORMAT_KASSA_TID', 33);
 define('ON_APPROVE_STATUS_EVENT_TID', 35);
 define('PAY_TYPE_PEREKIDKA_TID_LOCAL', 85);
-define('PAY_TYPE_PEREKIDKA_TID_DEV', 111);
 define('PAY_TYPE_PEREKIDKA_TID_MASTER', 112);
 
 function salon_init(){
@@ -194,34 +194,69 @@ function balance_check_form_validate($form, &$form_state){
 	}
 }
 
+//function check_form_validate($form, &$form_state){
+//
+//	$salon_tid = $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'];
+//	$bill_date = $form_state['values']['field_date'][LANGUAGE_NONE][0]['value'];
+//	$node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+//
+//	if ($node_balance_nid) {
+//		$node_balance = node_load($node_balance_nid->nid);
+//
+//		if ($node_balance->field_date && $node_balance->field_date[LANGUAGE_NONE][0]['value'] && $bill_date < $node_balance->field_date[LANGUAGE_NONE][0]['value']) {
+//			form_set_error('field_date', t('Безнал для данного адреса заведен позже даты создания чека.'));
+//		}
+//
+//	}
+//
+//	if (
+//        $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_MASTER && !form_get_errors()
+//    ) {
+//        $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] = PAY_TYPE_CREDIT_TID;
+//        create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form_state['values']);
+//	}
+//
+//    if($form_state['values']['field_is_public'][LANGUAGE_NONE][0]['value'] && $form_state['values']['field_shared_address'][LANGUAGE_NONE][0]['target_id']){
+//        $public_bill_nid = node_load($form_state['values']['field_shared_address'][LANGUAGE_NONE][0]['target_id']);
+//
+//    }
+//
+//}
+
 function check_form_validate($form, &$form_state){
 
-	$salon_tid = $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'];
-	$bill_date = $form_state['values']['field_date'][LANGUAGE_NONE][0]['value'];
-	$node_balance_nid = get_node_by_field('balance_check', $salon_tid);
+    $salon_tid = $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'];
+    $bill_date = $form_state['values']['field_date'][LANGUAGE_NONE][0]['value'];
+    $node_balance_nid = get_node_by_field('balance_check', $salon_tid);
 
-	if ($node_balance_nid) {
-		$node_balance = node_load($node_balance_nid->nid);
+    if ($node_balance_nid) {
+        $node_balance = node_load($node_balance_nid->nid);
 
-		if ($node_balance->field_date && $node_balance->field_date[LANGUAGE_NONE][0]['value'] && $bill_date < $node_balance->field_date[LANGUAGE_NONE][0]['value']) {
-			form_set_error('field_date', t('Безнал для данного адреса заведен позже даты создания чека.'));
-		}
-
-	}
-
-	if (
-        ($form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_LOCAL
-        || $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_MASTER
-        || $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_DEV) && !form_get_errors()
-    ) {
-        $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] = PAY_TYPE_CREDIT_TID;
-        create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form_state['values']);
-	}
-
-    if($form_state['values']['field_is_public'][LANGUAGE_NONE][0]['value'] && $form_state['values']['field_shared_address'][LANGUAGE_NONE][0]['target_id']){
-        $public_bill_nid = node_load($form_state['values']['field_shared_address'][LANGUAGE_NONE][0]['target_id']);
+        if ($node_balance->field_date && $node_balance->field_date[LANGUAGE_NONE][0]['value'] && $bill_date < $node_balance->field_date[LANGUAGE_NONE][0]['value']) {
+            form_set_error('field_date', t('Безнал для данного адреса заведен позже даты создания чека.'));
+        }
 
     }
+
+    if (
+        ($form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] == PAY_TYPE_PEREKIDKA_TID_MASTER) && !form_get_errors()
+    ) {
+        if ($form_state['values']['field_pay_format'][LANGUAGE_NONE][0]['tid'] == PAY_FORMAT_WITHOUT_CASH_TID) {
+            $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] = PAY_TYPE_CREDIT_TID;
+            create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form_state['values'], $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'], $form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid']);
+        }
+        else if($form_state['values']['field_pay_format'][LANGUAGE_NONE][0]['tid'] == PAY_FORMAT_KASSA_TID) {
+
+            // ORDER OF THE NEXT FIELDS IS IMPORTANT BECAUSE OF $source_bill_node['body']['und'][0]['value'] in  create_programmatically_bill()
+            create_programmatically_bill($form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'], $form_state['values'], $form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid']);
+
+            $form_state['values']['field_pay_type'][LANGUAGE_NONE][0]['tid'] = PAY_TYPE_CREDIT_TID;
+            create_programmatically_bill($form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'], $form_state['values'], $form_state['values']['field_salon'][LANGUAGE_NONE][0]['tid'], $form_state['values']['field_perekidka_balance'][LANGUAGE_NONE][0]['tid'],PAY_TYPE_CREDIT_TID);
+
+        }
+
+    }
+
 }
 
 function _salon_close_day_node_form_submit($form, &$form_state){
@@ -283,9 +318,6 @@ function salon_node_insert($node){
             $salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
             $isset_node_balance_nid = get_node_by_field('balance_check', $salon_tid);
         }
-
-
-
 
 		if ($isset_node_balance_nid) {
 			$balance_check = is_integer($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
