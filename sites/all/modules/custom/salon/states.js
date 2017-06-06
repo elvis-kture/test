@@ -57,6 +57,8 @@
             $('.field-name-field-is-public').hide()
             $('#edit-field-shared-address-und').val('_none')
         }
+
+        check_pay_format($('input[name=field_pay_type\\[und\\]]:checked'));
     }
     function check_pay_format($node) {
         $perekidka_address = $('.field-name-field-perekidka-balance')
