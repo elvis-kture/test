@@ -282,7 +282,7 @@ function salon_node_delete($node){
         }
 
 		if ($isset_node_balance_nid) {
-			$balance_check = is_integer($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
+			$balance_check = is_numeric($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
 			$balance_amount = (float)$balance_check->field_costs[LANGUAGE_NONE]['0']['value'];
 			$check_anount = (float)$node->field_costs[LANGUAGE_NONE]['0']['value'];
 
