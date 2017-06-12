@@ -273,8 +273,8 @@ function salon_node_delete($node){
 		&& $node->field_pay_format[LANGUAGE_NONE]['0']['tid'] == PAY_FORMAT_WITHOUT_CASH_TID
 	) {
         //if is public without cash ballace operation
-        if ($node->field_is_public[LANGUAGE_NONE][0]['value'] && $node->field_shared_address[LANGUAGE_NONE][0]['34116']) {
-            $isset_node_balance_nid = $node->field_shared_address[LANGUAGE_NONE][0]['34116'];
+        if ($node->field_is_public[LANGUAGE_NONE][0]['value'] && $node->field_shared_address[LANGUAGE_NONE][0]['target_id']) {
+            $isset_node_balance_nid = $node->field_shared_address[LANGUAGE_NONE][0]['target_id'];
         }
         else {
             $salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
@@ -311,8 +311,8 @@ function salon_node_insert($node){
 		&& $node->field_pay_format[LANGUAGE_NONE]['0']['tid'] == PAY_FORMAT_WITHOUT_CASH_TID
 	) {
         //if is public without cash ballace operation
-        if ($node->field_is_public[LANGUAGE_NONE][0]['value'] && $node->field_shared_address[LANGUAGE_NONE][0]['34116']) {
-            $isset_node_balance_nid = $node->field_shared_address[LANGUAGE_NONE][0]['34116'];
+        if ($node->field_is_public[LANGUAGE_NONE][0]['value'] && $node->field_shared_address[LANGUAGE_NONE][0]['target_id']) {
+            $isset_node_balance_nid = $node->field_shared_address[LANGUAGE_NONE][0]['target_id'];
         }
         else {
             $salon_tid = $node->field_salon[LANGUAGE_NONE][0]['tid'];
@@ -320,7 +320,7 @@ function salon_node_insert($node){
         }
 
 		if ($isset_node_balance_nid) {
-			$balance_check = is_integer($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
+			$balance_check = is_numeric($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
 			$balance_amount = (float)$balance_check->field_costs[LANGUAGE_NONE]['0']['value'];
 			$check_anount = (float)$node->field_costs[LANGUAGE_NONE]['0']['value'];
 
@@ -335,8 +335,7 @@ function salon_node_insert($node){
 					$balance_check->field_costs[LANGUAGE_NONE]['0']['value'] = $balance_amount + $check_anount;
 				}
 			}
-
-			$balance_check->revision = 1;
+            $balance_check->revision = 1;
 			node_save($balance_check);
 		}
 
@@ -402,7 +401,7 @@ function salon_node_update($node){
 
 			if ($isset_node_balance_nid) {
 
-				$balance_check = is_integer($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
+				$balance_check = is_numeric($isset_node_balance_nid) ? node_load($isset_node_balance_nid) : node_load($isset_node_balance_nid->nid);
 				$balance_amount = (float)$balance_check->field_costs[LANGUAGE_NONE]['0']['value'];
 				$check_anount = $new_value - $old_value;
 
