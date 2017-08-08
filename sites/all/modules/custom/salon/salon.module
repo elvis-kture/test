@@ -342,7 +342,7 @@ function salon_node_insert($node){
 	}
 }
 
-function create_programmatically_bill($perekidka_salon_tid, &$source_bill_node) {
+function create_programmatically_bill($perekidka_salon_tid, &$source_bill_node, $tid = null, $tid2 = null, $type = null) {
 	global $user;
 	$perekidka_salon = taxonomy_term_load($perekidka_salon_tid);
     $source_salon = taxonomy_term_load($source_bill_node['field_salon'][LANGUAGE_NONE][0]['tid']);
@@ -372,7 +372,7 @@ function create_programmatically_bill($perekidka_salon_tid, &$source_bill_node) 
 
 	//Bill fields
 	$node->field_salon = array(LANGUAGE_NONE => array(array('tid' => $perekidka_salon_tid)));
-	$node->field_pay_type = array(LANGUAGE_NONE => array(array('tid' => PAY_TYPE_DEBIT_TID)));
+	$node->field_pay_type = array(LANGUAGE_NONE => array(array('tid' => $type ? $type : PAY_TYPE_DEBIT_TID)));
 	$node->field_pay_format = $source_bill_node['field_pay_format'];
 	$node->field_date = $source_bill_node['field_date'];
 	$node->field_articul = $source_bill_node['field_articul'];
