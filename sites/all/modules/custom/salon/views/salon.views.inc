@@ -5,7 +5,14 @@
  * Provides support for the Views module.
  */
 function salon_views_query_alter(&$view, &$query) {
-
+	if ($view->name == "test") {
+		foreach ($query->table_queue as $table) {
+			if ($table['join']) {
+				$table['join']->type = 'INNER';
+			}
+		}
+		$query->distinct = 0;
+	}
 //	if ($view->name == 'test') {
 //		if ($view->current_display == 'page') {
 //			if (!user_access('administer site configuration')) {
