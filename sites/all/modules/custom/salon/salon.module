@@ -85,7 +85,8 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 //		);
 
 		if ($form['field_perekidka_balance'] && arg(2) == 'edit' ) {
-			$term_name = explode(' ', $form['#node']->body[LANGUAGE_NONE][0]['value'])[2];
+			$terms = explode(' ', $form['#node']->body[LANGUAGE_NONE][0]['value']);
+			$term_name = $terms[2];
 			$salon = taxonomy_get_term_by_name($term_name);
 			$form['field_perekidka_balance'][LANGUAGE_NONE]['#default_value'] = key($salon);
 
