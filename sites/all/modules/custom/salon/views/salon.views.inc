@@ -5,6 +5,7 @@
  * Provides support for the Views module.
  */
 function salon_views_query_alter(&$view, &$query) {
+
 //	if ($view->name == "test") {
 //		foreach ($query->table_queue as $table) {
 //			if ($table['join']) {
