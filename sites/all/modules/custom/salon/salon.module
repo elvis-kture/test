@@ -100,19 +100,24 @@ function salon_form_alter(&$form, &$form_state, $form_id) {
 //			$form['body'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
 			$form['field_perekidka_balance'][LANGUAGE_NONE]['#attributes']['disabled'] = TRUE;
 		} else {
-            foreach ($form['field_perekidka_balance'][LANGUAGE_NONE]['#options'] as $option_tid_salon => $name) {
 
-                $query = new EntityFieldQuery();
-                $query->entityCondition('entity_type', 'node')
-                    ->entityCondition('bundle', 'balance_check')
-                    ->fieldCondition('field_salon', 'tid', $option_tid_salon);
+			/**
+			 * Exclude adresses without WITHOUT CASH BALANCE ADDRESS
+			 */
 
-                $result = $query->execute();
-                if (!$result) {
-                    unset($form['field_perekidka_balance'][LANGUAGE_NONE]['#options'][$option_tid_salon]);
-                }
-
-            }
+//            foreach ($form['field_perekidka_balance'][LANGUAGE_NONE]['#options'] as $option_tid_salon => $name) {
+//
+//                $query = new EntityFieldQuery();
+//                $query->entityCondition('entity_type', 'node')
+//                    ->entityCondition('bundle', 'balance_check')
+//                    ->fieldCondition('field_salon', 'tid', $option_tid_salon);
+//
+//                $result = $query->execute();
+//                if (!$result) {
+//                    unset($form['field_perekidka_balance'][LANGUAGE_NONE]['#options'][$option_tid_salon]);
+//                }
+//
+//            }
         }
 
 
