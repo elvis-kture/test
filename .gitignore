@@ -1,12 +1,6 @@
 # Ignore configuration files that may contain sensitive information.
 sites/*/*settings*.php
 
-# Ignore paths that contain generated content.
-cache/
-files/
-sites/*/files
-sites/*/private
-
 # Ignore default text files
 .htaccess
 robots.txt
@@ -35,3 +29,14 @@ xmlrpc.php
 /profiles
 /scripts
 /themes
+sites/*/settings*.php
+
+# Ignore paths that contain user-generated content.
+sites/*/files
+sites/*/private
+
+# Ignore IDE work folders.
+nbproject
+.idea
+.idea/*
+

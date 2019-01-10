@@ -1,4 +1,5 @@
-“Mysearch” module code refactoring:
+
+“Mysearch” module code refactoring + SALON repo merge:
 
 - Use definition in hook_menu for arguments
 - Define title dynamically in .inc file
@@ -7,3 +8,5 @@
 - Remove custom query for search, instead we use certified core search module function 
 - Remove html from module function< move it in template file
 - Use instead html tags ‘<a>...</a>’, <‘ul><li...</ul>’ predefined drupal theme and constructions l(), theme_item_list(), t()...
+
+
